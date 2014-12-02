@@ -1,7 +1,7 @@
 print 'Starting Format'
 
-inputfile = open('BATCHARGE.txt')
-outputfile = open('CHARGEFIX.txt','w')
+inputfile = open('DSCHG2.txt')
+outputfile = open('CHARGEFIX2.txt','w')
 
 print 'Opened Files'
 
@@ -22,7 +22,10 @@ txt = 'VIOLET'
 
 print 'Data Formatted'
 
-outputfile.writelines(`floatings`)
+for jabar in range(len(floatings)-1):
+	outputfile.writelines(`854+jabar` + ' ' + `floatings[jabar]` + '\n')
+
+#outputfile.writelines(`floatings`)
 
 print len(floatings)
 print 'Data Written'
