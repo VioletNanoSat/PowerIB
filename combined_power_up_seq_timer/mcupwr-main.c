@@ -356,9 +356,22 @@ void StateofCharge(void){
 		if(  (batt1_voltage <= 0x7E) && (batt1_voltage > 0x64)  ){
 			antioptimizer++;
 			if(isCharging){
-				percent = ((charge20Pc[batt1_voltage - 0x65]) - 11) / (10.57);
+				
+				ltOffset =  (batt1_voltage <= 0x69) ? (batt1_voltageLow >> 6) :
+				            ((batt1_voltage >= 0x6A) && (batt1_voltage <= 0x73)) ? (((batt1_voltageLow >> 6) + 1) % 0x04) :
+							(batt1_voltage >= 0x74) ? (((batt1_voltageLow >> 6) + 2) % 0x04) :
+							0x00; 
+				percent = (charge20Pc[(batt1_voltage - 0x65)*4 + ltOffset] - 11) / (10.57);
+				antioptimizer+=6;
+				
 			}else{
-				percent = 100 - ((discharge20Pc[0x77 - batt1_voltage]) ) / (10.07);
+				
+				ltOffset =  (batt1_voltage <= 0x69) ? (batt1_voltageLow >> 6) :
+							((batt1_voltage >= 0x6A) && (batt1_voltage <= 0x73)) ? (((batt1_voltageLow >> 6) + 1) % 0x04) :
+							((batt1_voltage >= 0x74) && (batt1_voltage <= 0x76)) ? (((batt1_voltageLow >> 6) + 2) % 0x04) :
+							0x00;
+				
+				percent = 100 - ((discharge20Pc[(0x77 - batt1_voltage)*4 - ltOffset]) ) / (10.07);
 			}
 		}else if(batt1_voltage <= 0x64){
 			percent = -1;

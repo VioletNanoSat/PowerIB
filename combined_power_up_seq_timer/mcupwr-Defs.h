@@ -235,11 +235,13 @@ float w, w2;
 // Time and voltage values (between 0 and 255)
 float batt_time;
 uint8_t batt1_voltage;
+uint8_t batt1_voltageLow;
 uint8_t batt2_voltage;
 uint8_t solar1_current;
 uint8_t high;
 uint8_t low;
 uint8_t hasCheckedCurr;
+uint8_t ltOffset;
 
 // Transmit Flags
 uint8_t safe_mode;

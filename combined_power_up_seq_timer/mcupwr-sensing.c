@@ -315,6 +315,7 @@ void read_VIT( void )
 			// SoC: If component is a battery, store in different global variable
 			if (component->name == BATTERY_1) {
 				batt1_voltage = ADC_high;
+				batt1_voltageLow = ADC_low;
 				high = ADC_high;
 				low = ADC_low;
 				//debug = adc_component;
