@@ -121,8 +121,10 @@
 #define ADC_TEMPERATURE 3
 #define ADC_INIT        4
 
-#define V_THRESHOLD_VALUE 225
-#define I_THRESHOLD_VALUE 225
+#define V_THRESHOLD_VALUE 0xA0
+#define V_UNDER_VALUE 16
+#define I_THRESHOLD_VALUE 0xA0
+#define I_UNDER_VALUE 16
 
 #define NUM_SAMPLES 3
 
@@ -169,6 +171,7 @@ typedef struct SVIT
   uint8_t  V_mux_num;              // which analog mux does this component belong to?
   uint8_t  V_mux_sel;              // mux select bits for choosing this component
   uint8_t  V_upper_limit;
+  uint8_t  V_lower_limit;
   uint8_t  V_samples[NUM_SAMPLES]; // previous 4 samples used to construct median value
   uint8_t  V_sample_index;
   uint8_t  V_critical_value;
@@ -176,6 +179,7 @@ typedef struct SVIT
   uint8_t  I_mux_num;
   uint8_t  I_mux_sel;
   uint8_t  I_upper_limit;
+  uint8_t  I_lower_limit;
   uint8_t  I_samples[NUM_SAMPLES];
   uint8_t  I_sample_index;
   uint8_t  I_critical_value;
@@ -279,7 +283,7 @@ ISR( USART0_RX_vect );
 void initialize( void );
 void initialize_svit( void );
 void receive_message( uint8_t uart, uint8_t* message, uint8_t message_size );
-void set_component( uint8_t svit_index, uint8_t name, uint8_t switch_num, uint8_t switch_state, uint8_t V_mux_num, uint8_t V_mux_sel, uint8_t V_upper_limit, uint8_t I_mux_num, uint8_t I_mux_sel, uint8_t I_upper_limit, uint8_t T_mux_num, uint8_t T_mux_sel );
+void set_component( uint8_t svit_index, uint8_t name, uint8_t switch_num, uint8_t switch_state, uint8_t V_mux_num, uint8_t V_mux_sel, uint8_t V_upper_limit, uint8_t V_lower_limit, uint8_t I_mux_num, uint8_t I_mux_sel, uint8_t I_upper_limit, uint8_t I_lower_limit, uint8_t T_mux_num, uint8_t T_mux_sel );
 void read_VIT( void );
 void switch_on( uint8_t switch_num );
 void switch_off( uint8_t switch_num );
@@ -305,5 +309,6 @@ void soc_voltage( void );
 void compareVoltage( void );
 void limit_check( void );
 void calcSOC( void );
+void StateofCharge(void);
 
 #endif

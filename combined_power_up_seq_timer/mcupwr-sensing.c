@@ -305,8 +305,7 @@ void read_VIT( void )
   uint8_t sample_index;
   //analyze completed ADC conversion 
   
-  switch ( adc_sensor_type )
-  {
+  switch ( adc_sensor_type ){
 		case ADC_VOLTAGE:
 			component = &svit[adc_component];
 			sample_index = component->V_sample_index;
@@ -324,44 +323,62 @@ void read_VIT( void )
 				batt2_voltage = ADC_high;
 			}
 			component->V_samples[sample_index] = ADC_high;
-      
-	  	if ( ( ADC_high > component->V_upper_limit ) && ( component->force_on != 1 ) )
-			{
-				if ( component->switch_num != SW_NULL )
-				{
-			  	switch_off( component->switch_num );
-				}
-		  	else
-				{
-			  	switch ( component->name )
-			  	{
+            
+			//OverVoltage
+	  		if ( ( ADC_high > component->V_upper_limit ) && ( component->force_on != 1 ) ){
+				if ( component->switch_num != SW_NULL ){
+					switch_off( component->switch_num );
+				}else {
+					switch ( component->name ){
 						case TORQUER_1:
-				  		torquer_off( TORQUER_1 );
-				  		break;
-					  case TORQUER_2:
-	  			  	torquer_off( TORQUER_2 );
-		  		  	break;
-			  		case TORQUER_3:
-				    	torquer_off( TORQUER_3 );
-				    	break;
-					  default:
-				  	  break;
-			    }
-  			}
-        component->switch_state = SW_OFF;
-        component->V_critical_value = ADC_high;
-		  }
-		  adc_sensor_type = ADC_CURRENT;
+				  			torquer_off( TORQUER_1 );
+				  			break;
+						case TORQUER_2:
+	  			  			torquer_off( TORQUER_2 );
+		  		  			break;
+			  			case TORQUER_3:
+				    		torquer_off( TORQUER_3 );
+				    		break;
+						default:
+				  			break;
+					}
+  				}
+				component->switch_state = SW_OFF;
+				component->V_critical_value = ADC_high;
+			}
+			//UnderVoltage
+			else if((ADC_high < component->V_lower_limit) && component->switch_state){
+				if ( component->switch_num != SW_NULL ){
+					switch_off( component->switch_num );
+				}else {
+					switch ( component->name ){
+						case TORQUER_1:
+							torquer_off( TORQUER_1 );
+							break;
+						case TORQUER_2:
+							torquer_off( TORQUER_2 );
+							break;
+						case TORQUER_3:
+							torquer_off( TORQUER_3 );
+							break;
+						default:
+							break;
+					}
+				}
+				component->switch_state = SW_OFF;
+				component->V_critical_value = ADC_high;
+			}
+			adc_sensor_type = ADC_CURRENT;
 
-      //perform next ADC conversion
-      mux_num = component->I_mux_num;
-      mux_sel = component->I_mux_sel;
-      set_mux_sel( mux_num, mux_sel );
-      //_delay_us(1);
-      //_delay_us(6000);
-	  _delay_ms(ADC_DELAY_MS);
-      perform_ADC( mux_num );
-		  break;
+		    //perform next ADC conversion
+		    mux_num = component->I_mux_num;
+		    mux_sel = component->I_mux_sel;
+		    set_mux_sel( mux_num, mux_sel );
+		    //_delay_us(1);
+		    //_delay_us(6000);
+		    _delay_ms(ADC_DELAY_MS);
+		    perform_ADC( mux_num );
+		    break;
 	
     //-------------------------------------------------------------------
     // Measure current

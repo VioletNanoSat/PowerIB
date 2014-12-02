@@ -35,7 +35,7 @@ static const uint8_t charge20V[28] = {
 		
 };
 
-static const uint16_t charge20Pc[110] = {
+static const __flash uint16_t charge20Pc[110] = {
 	//8, 11, 14, 18, 22, 27, 33, 39, 46, 54, 63, 76, 127, 179, 234, 299, 421, 552, 637, 726, 790, 845, 899, 948, 991, 1029, 1068, 1140
 	8, 9, 9, 10, //10.4   0x00
 	11, 12, 13, 13,
@@ -73,7 +73,7 @@ static const uint16_t charge20Pc[110] = {
 *
 * PLEASE FILL IN THESE VALUES
 **/
-static const uint16_t discharge20Pc[64] = {
+static const __flash uint16_t discharge20Pc[64] = {
     0 /*>=12.4*/, 3/*12.375  0x7640 off=3*/, 3, 3, 
 	3/*12.3  0x7680 off=0*/, 3, 3, 3, 
 	3, 3, 3, 3, 

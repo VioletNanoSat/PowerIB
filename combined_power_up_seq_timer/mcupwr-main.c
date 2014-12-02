@@ -15,7 +15,7 @@
 // UART file descriptor for debugging purposes
 //FILE uart_str = FDEV_SETUP_STREAM(uart_putchar, uart_getchar, _FDEV_SETUP_RW);
 
-void set_component( uint8_t svit_index, uint8_t name, uint8_t switch_num, uint8_t switch_state, uint8_t V_mux_num, uint8_t V_mux_sel, uint8_t V_upper_limit, uint8_t I_mux_num, uint8_t I_mux_sel, uint8_t I_upper_limit, uint8_t T_mux_num, uint8_t T_mux_sel )
+void set_component( uint8_t svit_index, uint8_t name, uint8_t switch_num, uint8_t switch_state, uint8_t V_mux_num, uint8_t V_mux_sel, uint8_t V_upper_limit, uint8_t V_lower_limit, uint8_t I_mux_num, uint8_t I_mux_sel, uint8_t I_upper_limit, uint8_t I_lower_limit, uint8_t T_mux_num, uint8_t T_mux_sel )
 {
   svit[svit_index].name = name;
   svit[svit_index].switch_num = switch_num;
@@ -25,12 +25,14 @@ void set_component( uint8_t svit_index, uint8_t name, uint8_t switch_num, uint8_
   svit[svit_index].V_mux_num = V_mux_num;
   svit[svit_index].V_mux_sel = V_mux_sel;
   svit[svit_index].V_upper_limit = V_upper_limit;
+  svit[svit_index].V_lower_limit = V_lower_limit;
   svit[svit_index].V_sample_index = 0;
   svit[svit_index].V_critical_value = 0;
 
   svit[svit_index].I_mux_num = I_mux_num;
   svit[svit_index].I_mux_sel = I_mux_sel;
   svit[svit_index].I_upper_limit = I_upper_limit;
+  svit[svit_index].I_lower_limit = I_lower_limit;
   svit[svit_index].I_sample_index = 0;
   svit[svit_index].I_critical_value = 0;
   svit[svit_index].T_mux_num = T_mux_num;
@@ -54,44 +56,44 @@ void initialize_svit( void )
   //sample_index = 0;
   svit_index = 0;
 
-  //                index           name      switch_num  switch_state   V_mux_num   V_mux_sel     V_upper_limit      I_mux_num  I_mux_sel     I_upper_limit      T_mux_num   T_mux_sel
-  set_component( svit_index++,  SPECTROMETER,  SW_EN7 ,     SW_ON,          MUX0,       11,      V_THRESHOLD_VALUE,      MUX0,        6 ,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );
-  set_component( svit_index++,  STAR_TRACKER,  SW_EN8 ,     SW_ON,          MUX0,       23,      V_THRESHOLD_VALUE,      MUX0,        7 ,    I_THRESHOLD_VALUE,    MUX1    ,       7     );        
-  set_component( svit_index++,  FC_5V       ,  SW_EN1 ,     SW_ON,          MUX1,       19,      V_THRESHOLD_VALUE,      MUX1,        0 ,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );        
-  set_component( svit_index++,  FC_3_3V     ,  SW_EN1 ,     SW_ON,          MUX2,       13,      V_THRESHOLD_VALUE,      MUX2,        14,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );        
-  set_component( svit_index++,  GPS_1       ,  SW_EN2 ,     SW_ON,          MUX1,       21,      V_THRESHOLD_VALUE,      MUX1,        1 ,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );  
-  set_component( svit_index++,  GPS_2       ,  SW_EN3 ,     SW_ON,          MUX1,       26,      V_THRESHOLD_VALUE,      MUX1,        2 ,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );    
-  set_component( svit_index++,  CDH_IB      ,  SW_EN4 ,     SW_ON,          MUX1,       29,      V_THRESHOLD_VALUE,      MUX1,        3 ,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );  
-  set_component( svit_index++,  HEATER_1    ,  SW_EN5 ,     SW_ON,          MUX1,       14,      V_THRESHOLD_VALUE,      MUX1,        31,    I_THRESHOLD_VALUE,    MUX_NULL,       0     ); 
-  set_component( svit_index++,  HEATER_2    ,  SW_EN6 ,     SW_ON,          MUX1,       27,      V_THRESHOLD_VALUE,      MUX1,        4 ,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );  
-  set_component( svit_index++,  CMG         ,  SW_EN9 ,     SW_ON,          MUX1,       15,      V_THRESHOLD_VALUE,      MUX1,        8 ,    I_THRESHOLD_VALUE,    MUX_NULL,       0     ); 
-  set_component( svit_index++,  SUN_SENSOR  ,  SW_EN10,     SW_ON,          MUX1,       25,      V_THRESHOLD_VALUE,      MUX1,        9 ,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );  
-  set_component( svit_index++,  RADIO_1     ,  SW_EN11,     SW_OFF,          MUX1,       24,      V_THRESHOLD_VALUE,      MUX1,        10,    I_THRESHOLD_VALUE,    MUX_NULL,       0     ); 
-  set_component( svit_index++,  RADIO_2     ,  SW_EN12,     SW_OFF,          MUX1,       17,      V_THRESHOLD_VALUE,      MUX1,        16,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );   
-  set_component( svit_index++,  MAESTRO     ,  SW_EN13,     SW_ON,          MUX1,       22,      V_THRESHOLD_VALUE,      MUX1,        12,    I_THRESHOLD_VALUE,    MUX2    ,       8     );  
-  set_component( svit_index++,  MAGNETOM    ,  SW_EN14,     SW_ON,          MUX0,       4 ,      V_THRESHOLD_VALUE,      MUX0,        6 ,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );    
-  set_component( svit_index++,  FOG_15V     ,  SW_EN16,     SW_ON,          MUX2,       21,      V_THRESHOLD_VALUE,      MUX_NULL,    0,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );  // Fake Data changed mux 2 20 to mux null 0
-  set_component( svit_index++,  FOG_5V      ,  SW_EN15,     SW_ON,          MUX1,       18,      V_THRESHOLD_VALUE,      MUX1,        13,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );  // Fake Data
-  set_component( svit_index++,  TORQUER_1   ,  SW_NULL,     SW_OFF,          MUX1,       28,      V_THRESHOLD_VALUE,      MUX1,        5 ,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );  
-  set_component( svit_index++,  TORQUER_2   ,  SW_NULL,     SW_OFF,          MUX2,       15,      V_THRESHOLD_VALUE,      MUX2,        16,    I_THRESHOLD_VALUE,    MUX_NULL,       0     ); 
-  set_component( svit_index++,  TORQUER_3   ,  SW_NULL,     SW_OFF,          MUX2,       17,      V_THRESHOLD_VALUE,      MUX2,        18,    I_THRESHOLD_VALUE,    MUX_NULL,       0     ); 
-  set_component( svit_index++,  BATTERY_1   ,  SW_NULL,     SW_ON,          MUX0,       1 ,      V_THRESHOLD_VALUE,      MUX0,        2 ,    I_THRESHOLD_VALUE,    MUX2    ,       9     );  // Fake Data  
+  //                index           name      switch_num  switch_state   V_mux_num   V_mux_sel     V_upper_limit		 I_mux_num  I_mux_sel     I_upper_limit      T_mux_num   T_mux_sel
+  set_component( svit_index++,  SPECTROMETER,  SW_EN7 ,     SW_ON,          MUX0,       11,      V_THRESHOLD_VALUE, V_UNDER_VALUE,       MUX0,        6 ,    I_THRESHOLD_VALUE,   I_UNDER_VALUE,    MUX_NULL,       0     );
+  set_component( svit_index++,  STAR_TRACKER,  SW_EN8 ,     SW_ON,          MUX0,       23,      V_THRESHOLD_VALUE,  V_UNDER_VALUE,     MUX0,        7 ,    I_THRESHOLD_VALUE, I_UNDER_VALUE,    MUX1    ,       7     );        
+  set_component( svit_index++,  FC_5V       ,  SW_EN1 ,     SW_ON,          MUX1,       19,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,    MUX1,        0 ,    I_THRESHOLD_VALUE, I_UNDER_VALUE,    MUX_NULL,       0     );        
+  set_component( svit_index++,  FC_3_3V     ,  SW_EN1 ,     SW_ON,          MUX2,       13,      V_THRESHOLD_VALUE,    V_UNDER_VALUE,   MUX2,        14,    I_THRESHOLD_VALUE, I_UNDER_VALUE,  MUX_NULL,       0     );        
+  set_component( svit_index++,  GPS_1       ,  SW_EN2 ,     SW_ON,          MUX1,       21,      V_THRESHOLD_VALUE,  V_UNDER_VALUE,    MUX1,        1 ,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     );  
+  set_component( svit_index++,  GPS_2       ,  SW_EN3 ,     SW_ON,          MUX1,       26,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,    MUX1,        2 ,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     );    
+  set_component( svit_index++,  CDH_IB      ,  SW_EN4 ,     SW_ON,          MUX1,       29,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,    MUX1,        3 ,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     );  
+  set_component( svit_index++,  HEATER_1    ,  SW_EN5 ,     SW_ON,          MUX1,       14,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX1,        31,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     ); 
+  set_component( svit_index++,  HEATER_2    ,  SW_EN6 ,     SW_ON,          MUX1,       27,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX1,        4 ,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     );  
+  set_component( svit_index++,  CMG         ,  SW_EN9 ,     SW_ON,          MUX1,       15,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX1,        8 ,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     ); 
+  set_component( svit_index++,  SUN_SENSOR  ,  SW_EN10,     SW_ON,          MUX1,       25,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX1,        9 ,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     );  
+  set_component( svit_index++,  RADIO_1     ,  SW_EN11,     SW_OFF,          MUX1,       24,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX1,        10,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     ); 
+  set_component( svit_index++,  RADIO_2     ,  SW_EN12,     SW_OFF,          MUX1,       17,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX1,        16,    I_THRESHOLD_VALUE, I_UNDER_VALUE,    MUX_NULL,       0     );   
+  set_component( svit_index++,  MAESTRO     ,  SW_EN13,     SW_ON,          MUX1,       22,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX1,        12,    I_THRESHOLD_VALUE, I_UNDER_VALUE,    MUX2    ,       8     );  
+  set_component( svit_index++,  MAGNETOM    ,  SW_EN14,     SW_ON,          MUX0,       4 ,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX0,        6 ,    I_THRESHOLD_VALUE, I_UNDER_VALUE,  MUX_NULL,       0     );    
+  set_component( svit_index++,  FOG_15V     ,  SW_EN16,     SW_ON,          MUX2,       21,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX_NULL,    0,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     );  // Fake Data changed mux 2 20 to mux null 0
+  set_component( svit_index++,  FOG_5V      ,  SW_EN15,     SW_ON,          MUX1,       18,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX1,        13,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     );  // Fake Data
+  set_component( svit_index++,  TORQUER_1   ,  SW_NULL,     SW_OFF,          MUX1,       28,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX1,        5 ,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     );  
+  set_component( svit_index++,  TORQUER_2   ,  SW_NULL,     SW_OFF,          MUX2,       15,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX2,        16,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     ); 
+  set_component( svit_index++,  TORQUER_3   ,  SW_NULL,     SW_OFF,          MUX2,       17,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX2,        18,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     ); 
+  set_component( svit_index++,  BATTERY_1   ,  SW_NULL,     SW_ON,          MUX0,       1 ,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX0,        2 ,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX2    ,       9     );  // Fake Data  
   //set_component( svit_index++,  BATTERY_1_b  ,  SW_NULL,     SW_ON,          MUX0,       1 ,      V_THRESHOLD_VALUE,      MUX1,        23 ,    I_THRESHOLD_VALUE,    MUX2    ,       9     );  // Fake Data  
-  set_component( svit_index++,  BATTERY_2   ,  SW_NULL,     SW_ON,          MUX2,       20,      V_THRESHOLD_VALUE,      MUX2,        30,    I_THRESHOLD_VALUE,    MUX2    ,       11    );  // Fake Data  
-  set_component( svit_index++,  SOLAR_FULL  ,  SW_NULL,     SW_ON,          MUX0,       7 ,      V_THRESHOLD_VALUE,      MUX0,        3 ,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );
-  set_component( svit_index++,  SOLAR_1     ,  SW_NULL,     SW_ON,          MUX0,       18,      V_THRESHOLD_VALUE,      MUX0,        20,    I_THRESHOLD_VALUE,    MUX2    ,       0     );  
-  set_component( svit_index++,  SOLAR_2     ,  SW_NULL,     SW_ON,          MUX0,       19,      V_THRESHOLD_VALUE,      MUX0,        21,    I_THRESHOLD_VALUE,    MUX2    ,       1     ); 
-  set_component( svit_index++,  SOLAR_3     ,  SW_NULL,     SW_ON,          MUX0,       10,      V_THRESHOLD_VALUE,      MUX0,        22,    I_THRESHOLD_VALUE,    MUX2    ,       2     );  
-  set_component( svit_index++,  SOLAR_4     ,  SW_NULL,     SW_ON,          MUX0,       15,      V_THRESHOLD_VALUE,      MUX0,        23,    I_THRESHOLD_VALUE,    MUX2    ,       3     );  
-  set_component( svit_index++,  SOLAR_5     ,  SW_NULL,     SW_ON,          MUX0,       9 ,      V_THRESHOLD_VALUE,      MUX0,        24,    I_THRESHOLD_VALUE,    MUX2    ,       4     );  
-  set_component( svit_index++,  SOLAR_6     ,  SW_NULL,     SW_ON,          MUX0,       14,      V_THRESHOLD_VALUE,      MUX0,        25,    I_THRESHOLD_VALUE,    MUX_NULL,       0     ); 
-  set_component( svit_index++,  SOLAR_7     ,  SW_NULL,     SW_ON,          MUX0,       16,      V_THRESHOLD_VALUE,      MUX0,        26,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );  
-  set_component( svit_index++,  SOLAR_8     ,  SW_NULL,     SW_ON,          MUX0,       8 ,      V_THRESHOLD_VALUE,      MUX0,        27,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );  
-  set_component( svit_index++,  SOLAR_9     ,  SW_NULL,     SW_ON,          MUX0,       13,      V_THRESHOLD_VALUE,      MUX0,        28,    I_THRESHOLD_VALUE,    MUX2    ,       5     );  
-  set_component( svit_index++,  SOLAR_10    ,  SW_NULL,     SW_ON,          MUX0,       12,      V_THRESHOLD_VALUE,      MUX0,        29,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );  
-  set_component( svit_index++,  SOLAR_11    ,  SW_NULL,     SW_ON,          MUX0,       11,      V_THRESHOLD_VALUE,      MUX0,        30,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );  
-  set_component( svit_index++,  SOLAR_12    ,  SW_NULL,     SW_ON,          MUX0,       17,      V_THRESHOLD_VALUE,      MUX0,        31,    I_THRESHOLD_VALUE,    MUX_NULL,       0     );  
-  set_component( svit_index++,  POWER_BOARD ,  SW_NULL,     SW_ON,          MUX0,       5 ,      V_THRESHOLD_VALUE,      MUX0,        0 ,    I_THRESHOLD_VALUE,    MUX2    ,       6     );  // Fake Data
+  set_component( svit_index++,  BATTERY_2   ,  SW_NULL,     SW_ON,          MUX2,       20,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX2,        30,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX2    ,       11    );  // Fake Data  
+  set_component( svit_index++,  SOLAR_FULL  ,  SW_NULL,     SW_ON,          MUX0,       7 ,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX0,        3 ,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     );
+  set_component( svit_index++,  SOLAR_1     ,  SW_NULL,     SW_ON,          MUX0,       18,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX0,        20,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX2    ,       0     );  
+  set_component( svit_index++,  SOLAR_2     ,  SW_NULL,     SW_ON,          MUX0,       19,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX0,        21,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX2    ,       1     ); 
+  set_component( svit_index++,  SOLAR_3     ,  SW_NULL,     SW_ON,          MUX0,       10,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX0,        22,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX2    ,       2     );  
+  set_component( svit_index++,  SOLAR_4     ,  SW_NULL,     SW_ON,          MUX0,       15,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX0,        23,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX2    ,       3     );  
+  set_component( svit_index++,  SOLAR_5     ,  SW_NULL,     SW_ON,          MUX0,       9 ,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX0,        24,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX2    ,       4     );  
+  set_component( svit_index++,  SOLAR_6     ,  SW_NULL,     SW_ON,          MUX0,       14,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX0,        25,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     ); 
+  set_component( svit_index++,  SOLAR_7     ,  SW_NULL,     SW_ON,          MUX0,       16,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX0,        26,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     );  
+  set_component( svit_index++,  SOLAR_8     ,  SW_NULL,     SW_ON,          MUX0,       8 ,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX0,        27,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     );  
+  set_component( svit_index++,  SOLAR_9     ,  SW_NULL,     SW_ON,          MUX0,       13,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX0,        28,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX2    ,       5     );  
+  set_component( svit_index++,  SOLAR_10    ,  SW_NULL,     SW_ON,          MUX0,       12,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX0,        29,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     );  
+  set_component( svit_index++,  SOLAR_11    ,  SW_NULL,     SW_ON,          MUX0,       11,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX0,        30,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     );  
+  set_component( svit_index++,  SOLAR_12    ,  SW_NULL,     SW_ON,          MUX0,       17,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX0,        31,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX_NULL,       0     );  
+  set_component( svit_index++,  POWER_BOARD ,  SW_NULL,     SW_ON,          MUX0,       5 ,      V_THRESHOLD_VALUE,   V_UNDER_VALUE,      MUX0,        0 ,    I_THRESHOLD_VALUE, I_UNDER_VALUE,   MUX2    ,       6     );  // Fake Data
 }
 
 void initialize( void )
@@ -510,6 +512,9 @@ void limit_check( void ) {
 	}
 	else {} // To avoid annoying compile warning 
 }
+
+
+
 
 // Calculates percent state of charge
 void calcSOC( void ) {
