@@ -10,6 +10,7 @@
 #include "crclib.h"
 #include "uart.h"
 #include "math.h"
+#include "battery_data.h"
 
 // UART file descriptor for debugging purposes
 //FILE uart_str = FDEV_SETUP_STREAM(uart_putchar, uart_getchar, _FDEV_SETUP_RW);
@@ -337,6 +338,23 @@ inline void receive_message( uint8_t uart, uint8_t* message, uint8_t message_siz
 }
 
 
+uint8_t antioptimizer = 0;
+void StateofCharge(void){
+	if(batt1_voltage < 0xFF){
+		if(  (batt1_voltage <= 0x7E) && (batt1_voltage >= 0x64)  ){
+			antioptimizer++;
+			percent = ((charge20Pc[batt1_voltage - 0x65]) - 11) / (10.57);
+		}else if(batt1_voltage < 0x64){
+			percent = -1;
+		}else if(batt1_voltage >= 0x7F){
+			percent = 108;
+		}
+	}
+	
+}
+
+
+
 /* Assigns values to the Fourier coefficients of the charge approximation */
 void assign_charge_fit( void ) {
   charge_max_time = 10188;
@@ -354,6 +372,7 @@ void assign_charge_fit( void ) {
 }
 
 /* Assigns values to the Fourier coefficients of the discharge approximation */
+
 void assign_discharge_fit( void ) {
   discharge_max_time = 17547;
   f0 = -1.543291233254410E4;
@@ -380,6 +399,7 @@ void assign_discharge_fit( void ) {
   g4 =   -1.016608352073227E7;
   w2 =  0.364797662747743;
 }
+
 
 void compareVoltage( void ) {
   SVIT_t *component;
@@ -415,7 +435,7 @@ void limit_check( void ) {
 	SVIT_t *component;
 
 	// turn off all switches and send ack_command w/ value of SAFE_MODE
-	if (percent < SAFE_MODE) {
+	if (percent < SAFE_MODE  && !((percent<-.56) && (percent>-.57) )   ) {
 		safe_mode = 1;
 		for (sw = 0; sw < sizeof(components); sw++) {
 			component = &svit[components[sw]];
@@ -607,7 +627,8 @@ int main( void )
     {
         adc_flag = 0;
         read_VIT();
-		calcSOC();
+		//calcSOC();
+		StateofCharge();
 
 		/*
 		Manual Override on Limit Checking: The power board must be able to receive a 

@@ -14,7 +14,7 @@
     <OutputFileName>violet</OutputFileName>
     <OutputFileExtension>.elf</OutputFileExtension>
     <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
-    <ToolchainFlavour>AS4_AvrGcc</ToolchainFlavour>
+    <ToolchainFlavour>Native</ToolchainFlavour>
     <avrtool>com.atmel.avrdbg.tool.jtagicemkii</avrtool>
     <KeepTimersRunning>true</KeepTimersRunning>
     <OverrideVtor>false</OverrideVtor>
@@ -89,6 +89,10 @@
   </PropertyGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
   <ItemGroup>
+    <Compile Include="battery_data.h">
+      <SubType>compile</SubType>
+      <Link>battery_data.h</Link>
+    </Compile>
     <Compile Include="mcupwr-Defs.h">
       <SubType>compile</SubType>
     </Compile>

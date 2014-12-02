@@ -139,8 +139,8 @@
 //YET seems not to cause problems when run on AVR 4 (which uses the SAME toolchain!)
 //#define UDRE 5
 
-#define SAFE_MODE 9 // 9% charged 11.788122 V (ADC_val = 440, percent = 0x09)
-#define SHUNT_MODE 90 // 90% charged 12.846085 (ADC_val = 479, percent = 0x5A)
+#define SAFE_MODE 0 // 9% charged 11.788122 V (ADC_val = 440, percent = 0x09)    10.5V
+#define SHUNT_MODE 100 // 90% charged 12.846085 (ADC_val = 479, percent = 0x5A)  13V
 #define ADC_DELAY_MS 8
 
 //------------------------------------------------------------------------

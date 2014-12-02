@@ -1,23 +1,26 @@
-crclib.d crclib.o crclib.o: .././crclib.c .././crclib.h .././common.h \
-  c:/winavr-20100110/lib/gcc/../../avr/include/stdio.h \
-  c:/winavr-20100110/lib/gcc/../../avr/include/inttypes.h \
-  c:/winavr-20100110/lib/gcc/../../avr/include/stdint.h \
-  c:\winavr-20100110\bin\../lib/gcc/avr/4.3.3/include/stdarg.h \
-  c:\winavr-20100110\bin\../lib/gcc/avr/4.3.3/include/stddef.h \
-  c:/winavr-20100110/lib/gcc/../../avr/include/string.h
+crclib.d crclib.o: .././crclib.c .././crclib.h .././common.h \
+ c:\program\ files\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8-gnu-toolchain\bin\../lib/gcc/avr/4.7.2/../../../../avr/include/stdio.h \
+ c:\program\ files\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8-gnu-toolchain\bin\../lib/gcc/avr/4.7.2/../../../../avr/include/inttypes.h \
+ c:\program\ files\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8-gnu-toolchain\bin\../lib/gcc/avr/4.7.2/include/stdint.h \
+ c:\program\ files\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8-gnu-toolchain\bin\../lib/gcc/avr/4.7.2/../../../../avr/include/stdint.h \
+ c:\program\ files\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8-gnu-toolchain\bin\../lib/gcc/avr/4.7.2/include/stdarg.h \
+ c:\program\ files\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8-gnu-toolchain\bin\../lib/gcc/avr/4.7.2/include/stddef.h \
+ c:\program\ files\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8-gnu-toolchain\bin\../lib/gcc/avr/4.7.2/../../../../avr/include/string.h
 
 .././crclib.h:
 
 .././common.h:
 
-c:/winavr-20100110/lib/gcc/../../avr/include/stdio.h:
+c:\program\ files\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8-gnu-toolchain\bin\../lib/gcc/avr/4.7.2/../../../../avr/include/stdio.h:
 
-c:/winavr-20100110/lib/gcc/../../avr/include/inttypes.h:
+c:\program\ files\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8-gnu-toolchain\bin\../lib/gcc/avr/4.7.2/../../../../avr/include/inttypes.h:
 
-c:/winavr-20100110/lib/gcc/../../avr/include/stdint.h:
+c:\program\ files\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8-gnu-toolchain\bin\../lib/gcc/avr/4.7.2/include/stdint.h:
 
-c:\winavr-20100110\bin\../lib/gcc/avr/4.3.3/include/stdarg.h:
+c:\program\ files\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8-gnu-toolchain\bin\../lib/gcc/avr/4.7.2/../../../../avr/include/stdint.h:
 
-c:\winavr-20100110\bin\../lib/gcc/avr/4.3.3/include/stddef.h:
+c:\program\ files\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8-gnu-toolchain\bin\../lib/gcc/avr/4.7.2/include/stdarg.h:
 
-c:/winavr-20100110/lib/gcc/../../avr/include/string.h:
+c:\program\ files\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8-gnu-toolchain\bin\../lib/gcc/avr/4.7.2/include/stddef.h:
+
+c:\program\ files\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.2.1002\avr8-gnu-toolchain\bin\../lib/gcc/avr/4.7.2/../../../../avr/include/string.h:
