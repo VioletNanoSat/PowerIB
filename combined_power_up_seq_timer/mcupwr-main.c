@@ -353,7 +353,7 @@ void StateofCharge(void){
 		}
 	
 		
-		if(  (batt1_voltage <= 0x7E) && (batt1_voltage > 0x64)  ){
+		if(  (isCharging && (batt1_voltage <= 0x7E) && (batt1_voltage > 0x64)) || (!isCharging && (batt1_voltage <= 0x77) && (batt1_voltage > 0x64)) ){
 			antioptimizer++;
 			if(isCharging){
 				

@@ -73,7 +73,7 @@ static const uint16_t charge20Pc[110] = {
 *
 * PLEASE FILL IN THESE VALUES
 **/
-static const uint16_t discharge20Pc[25] = {
+static const uint16_t discharge20Pc[64] = {
     0 /*>=12.4*/, 3/*12.375  0x7640 off=3*/, 3, 3, 
 	3/*12.3  0x7680 off=0*/, 3, 3, 3, 
 	3, 3, 3, 3, 
