@@ -231,6 +231,8 @@ void initialize( void )
   high = 0;
   low = 0;
   limit_check_overriden = 0; // Initially limit checking is NOT OVERRIDEN
+  isCharging = 0;
+  hasCheckedCurr = 0;
   //---------------------------------------------------------------------  
   // END SOC Initializations
   //--------------------------------------------------------------------- 
@@ -340,16 +342,35 @@ inline void receive_message( uint8_t uart, uint8_t* message, uint8_t message_siz
 
 uint8_t antioptimizer = 0;
 void StateofCharge(void){
-	if(batt1_voltage < 0xFF){
-		if(  (batt1_voltage <= 0x7E) && (batt1_voltage >= 0x64)  ){
+	
+	
+	if(batt1_voltage < 0xFF  &&  hasCheckedCurr){
+		
+		if(solar1_current > 0x00){
+			isCharging = 1;
+		}else{
+			isCharging = 0;
+		}
+	
+		
+		if(  (batt1_voltage <= 0x7E) && (batt1_voltage > 0x64)  ){
 			antioptimizer++;
-			percent = ((charge20Pc[batt1_voltage - 0x65]) - 11) / (10.57);
-		}else if(batt1_voltage < 0x64){
+			if(isCharging){
+				percent = ((charge20Pc[batt1_voltage - 0x65]) - 11) / (10.57);
+			}else{
+				percent = 100 - ((discharge20Pc[0x77 - batt1_voltage]) ) / (10.07);
+			}
+		}else if(batt1_voltage <= 0x64){
 			percent = -1;
-		}else if(batt1_voltage >= 0x7F){
+		}else if(  ((batt1_voltage > 0x7E)&&isCharging) || ((!isCharging)&&(batt1_voltage > 0x77)) ){
 			percent = 108;
 		}
 	}
+	
+	if(solar1_current < 0xFF && solar1_current > 0x00){
+		antioptimizer++;
+	}
+	
 	
 }
 
@@ -460,7 +481,7 @@ void limit_check( void ) {
 		been_to_safe = 1;
 		transmit_safe = 1;
 	}
-	else if (percent > SHUNT_MODE) {
+	else if (percent > SHUNT_MODE  && isCharging) {
 	    safe_mode = 0;
 		// turn on the maestro and send ack_command w/ value of SHUNT_MODE
 		component = &svit[MAESTRO];

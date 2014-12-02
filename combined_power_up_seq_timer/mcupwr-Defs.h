@@ -236,8 +236,10 @@ float w, w2;
 float batt_time;
 uint8_t batt1_voltage;
 uint8_t batt2_voltage;
+uint8_t solar1_current;
 uint8_t high;
 uint8_t low;
+uint8_t hasCheckedCurr;
 
 // Transmit Flags
 uint8_t safe_mode;
@@ -262,6 +264,7 @@ float discharge_max_time;
 float charge_max_time;
 float percent;
 uint8_t soc;
+uint8_t isCharging;
 
 ISR(TIMER0_COMP_vect);
 ISR(TIMER1_COMPA_vect);

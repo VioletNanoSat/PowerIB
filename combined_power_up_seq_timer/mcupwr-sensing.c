@@ -380,6 +380,11 @@ void read_VIT( void )
 //		if (adc_component == BATTERY_1_b) {
 			//debug = 5;
 		//}
+		
+		if(component->name == SOLAR_1){
+			solar1_current = ADC_high;
+			hasCheckedCurr = 1;
+		}
 
 	  	component->I_samples[sample_index] = ADC_high;
     
