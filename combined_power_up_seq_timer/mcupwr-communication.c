@@ -6,33 +6,40 @@
 #include "crclib.h"
 #include "uart.h"
 
+uint16_t overflow_counter0 = 0;
+
+// ISR(TIMER0_COMP_vect)
 ISR(TIMER0_COMP_vect)
 {
-  if ( timer0_counter[0] > 0 )
-    --timer0_counter[0];
-  if ( timer0_counter[1] > 0 )
-    --timer0_counter[1];
+	overflow_counter0 = overflow_counter0 + 1;
 	
-	//if (cntr == 0)
-	//	PORTC |= 0x01;
-	//else
-	//	PORTC &= 0xFE;
-	//_delay_ms(500);
+	if(overflow_counter0 >= 100){
+		if ( timer0_counter[0] > 0 )
+		  --timer0_counter[0];
+		if ( timer0_counter[1] > 0 )
+		  --timer0_counter[1];
+		
+		PORTF ^= 0xFF;
+		overflow_counter0 = 0;
+	}
+
 }
 
 /* Timer 1(A) routine */
+//2s per interrupt
 ISR(TIMER1_COMPA_vect)		//Handle Radio & Torquer 30 min delays here; handle 10 min CDH-IB no heartbeat restart
 {
 	SVIT_t *component;
 	
-	//Testing
-	//PORTC ^= 0xFF;
+	//Testing that ISR fires
+	//PORTF ^= 0xFF;
 		
 	if (timer1_counter[0] <= 0	  &&     rad_torq_flag){	//provides 30 minute delay			
 	//if ( receive_flag == 1){		//If message is received, reset timer1_counter[0] to CYCLE_COUNTER
 	    timer1_counter[0] = CYCLE_COUNTER;
-		
-		//CHECK: Should the ISR do this code or not?
+			
+		//PORTF ^= 0xFF;	//LED for STK testing
+		//PORTC ^= 0x01;
 		
 		//Turn on radios
 		component = &svit[RADIO_1];
@@ -56,9 +63,6 @@ ISR(TIMER1_COMPA_vect)		//Handle Radio & Torquer 30 min delays here; handle 10 m
 		torquer_on(TORQUER_2);
 		torquer_on(TORQUER_3);
 		
-		//PORTC ^= 0x02;	//LED for STK testing
-		//PORTC ^= 0x01;
-		
 		//Don't reexecute this code
 		rad_torq_flag = 0;
 	}
@@ -70,8 +74,7 @@ ISR(TIMER1_COMPA_vect)		//Handle Radio & Torquer 30 min delays here; handle 10 m
 	}
 	
 	//else{
-		PORTC ^= 0x01;		//LED for STK testing at PORTC0
-		_delay_ms(500);
+		//_delay_ms(500);
 		--timer1_counter[0];
 		--timer1_counter[1];
 	//}

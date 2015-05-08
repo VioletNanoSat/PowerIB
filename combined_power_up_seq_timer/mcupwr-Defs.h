@@ -134,7 +134,7 @@
 // the maestro
 
 // Timer Stuff
-#define CYCLE_COUNTER 900 //for 30 min
+#define CYCLE_COUNTER 1//900 //for 30 min
 #define CYCLE_COUNTER_2 300 //for 10 min heartbeat check
 
 //GLITCHY UDRE code, NEEDED ON AVR6 - apparently not in toolchain, 

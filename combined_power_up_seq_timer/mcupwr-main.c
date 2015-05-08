@@ -11,6 +11,7 @@
 #include "uart.h"
 #include "math.h"
 #include "battery_data.h"
+#include <avr/io.h>
 
 // UART file descriptor for debugging purposes
 //FILE uart_str = FDEV_SETUP_STREAM(uart_putchar, uart_getchar, _FDEV_SETUP_RW);
@@ -114,9 +115,9 @@ void initialize( void )
   DDRE  = 0b11111110;
   PORTE = 0b00000000;
 
-  DDRF  = 0b11110000;
-  //0b11111111;	//testing
-  PORTF = 0b00000000;
+  DDRF  = //0b11110000;
+  0b11111111;	//testing
+  PORTF = 0b11111111;
 
   DDRG  = 0b00011111;
   PORTG = 0b00000100;
@@ -129,15 +130,20 @@ void initialize( void )
   // mode = clear on match
   // prescalar = 1024
   // compare value = 124
-  // compare match interrupt freq = (14.7456 MHz / 1024 / 100) = 144 Hz
-  // use timer0_counter to get 144 / 144 = 1 Hz
+  
+  // prescalar use of 1024 gives us a 14.4 kHz clock. Use software solution to reduce to 144 Hz.
+  // Using 144 as a counter value - the clock would hit it every 0.01 seconds or 10 ms
 
   // enable clear on match interrupt
-  TIMSK = ( 1 << OCIE0 );
-  OCR0 = 71;
+  OCR0 = 144;
 
   // enable clear on match mode, set prescalar to 1024
-  TCCR0 = ( 1 << WGM01 ) | ( 1 << CS02 ) | ( 1 << CS01 ) | ( 1 << CS00 );
+  TCCR0 |= ( 1 << WGM01 ) | ( 1 << CS02 ) | ( 1 << CS01 ) | ( 1 << CS00 );	// prescalar mode 1024
+  
+  TCNT0 = 0;
+
+  //Enable the interrupt to fire on overflow
+  TIMSK |= (1 << OCIE0);
 
   timer0_counter[0] = 99;
   timer0_counter[1] = 199;
@@ -151,7 +157,7 @@ void initialize( void )
   Ex:
   mode = clear on match
   prescalar = 1024
-  Timer counts up to OCR1B = 28800 and enters ISR(TIMER1_COMPB_vect)
+  Timer counts up to OCR1A = 28800 and enters ISR(TIMER1_COMPB_vect)
   clock frequency after prescaling = (14.7456 MHz / 1024) = 14.4 kHz
   period of interrupts = 28800 / 14400 Hz = 2 s/interrupt
   use timer1_counter to get a total period of 2*65535 =  s (24 hours is 86400 seconds)
@@ -167,7 +173,10 @@ void initialize( void )
   TCCR1B = ( 1 << WGM12 ) | ( 1 << CS12 ) | ( 1 << CS10 );
   // Explicit Default Defs
   // TCCR1A |= 0;
-  // TCNT1 = 0;
+  TCNT1 = 0;
+  
+  TIMSK |= (1 << OCIE1A);
+  
   timer1_counter[0] = CYCLE_COUNTER;	//CYCLE_COUNTER   = 900 for 2 seconds interrupt handler = 1800 secs (30 minutes)
   timer1_counter[1] = CYCLE_COUNTER_2;	//CYCLE_COUNTER_2 = 300 for 2 seconds interrupt handler = 600 secs  (10 minutes)
   //---------------------------------------------------------------------  
@@ -624,9 +633,6 @@ void on_sequence( void ) {
 	}
 }
 
-
-
-
 // MAIN
 int main( void ) 
 {  
@@ -638,6 +644,7 @@ int main( void )
 
   while(1)
   {
+	  
 	cntr = 1 - cntr; //Testing
 	
     if ( timer0_counter[1] == 0 )
@@ -669,10 +676,8 @@ int main( void )
 		//calcSOC();
 		StateofCharge();
 
-		/*
-		Manual Override on Limit Checking: The power board must be able to receive a 
-		command to disable and/or change the limits in the limit checking code
-		*/
+		//Manual Override on Limit Checking: The power board must be able to receive a 
+		//command to disable and/or change the limits in the limit checking code
 		if (!limit_check_overriden) {
 			limit_check(); // First determine if voltage is within valid range, then switch
 		}
@@ -692,7 +697,7 @@ int main( void )
 		
 		//reset appropriate timer counter to cycle_counter_2     //DOUBLECHECK that this adheres to the spec!!!
 		timer1_counter[1] = CYCLE_COUNTER_2;
-	}
+	}  
   
     //End of While(1)
   }
