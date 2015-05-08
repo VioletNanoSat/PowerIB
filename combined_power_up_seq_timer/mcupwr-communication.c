@@ -26,7 +26,7 @@ ISR(TIMER1_COMPA_vect)		//Handle Radio & Torquer 30 min delays here; handle 10 m
 	SVIT_t *component;
 	
 	//Testing
-	//PORTC ^= 0xFF;
+	PORTF ^= 0xFF;
 		
 	if (timer1_counter[0] <= 0	  &&     rad_torq_flag){	//provides 30 minute delay			
 	//if ( receive_flag == 1){		//If message is received, reset timer1_counter[0] to CYCLE_COUNTER

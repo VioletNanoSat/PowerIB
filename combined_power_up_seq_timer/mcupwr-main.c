@@ -114,8 +114,8 @@ void initialize( void )
   DDRE  = 0b11111110;
   PORTE = 0b00000000;
 
-  DDRF  = 0b11110000;
-  //0b11111111;	//testing
+  DDRF  = //0b11110000;
+  0b11111111;	//testing
   PORTF = 0b00000000;
 
   DDRG  = 0b00011111;
