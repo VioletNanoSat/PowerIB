@@ -11,6 +11,7 @@
 #include "uart.h"
 #include "math.h"
 #include "battery_data.h"
+#include "soc.h"
 
 // UART file descriptor for debugging purposes
 //FILE uart_str = FDEV_SETUP_STREAM(uart_putchar, uart_getchar, _FDEV_SETUP_RW);
@@ -114,8 +115,8 @@ void initialize( void )
   DDRE  = 0b11111110;
   PORTE = 0b00000000;
 
-  DDRF  = //0b11110000;
-  0b11111111;	//testing
+  DDRF  = 0b11110000;
+  //0b11111111;	//testing
   PORTF = 0b00000000;
 
   DDRG  = 0b00011111;
@@ -219,6 +220,7 @@ void initialize( void )
   assign_charge_fit();
   assign_discharge_fit();
   
+  
   // First get battery voltage so that the SoC can
   // accurately determine whether batteries are charging or discharging
   batt1_voltage = 0xff;
@@ -235,6 +237,9 @@ void initialize( void )
   limit_check_overriden = 0; // Initially limit checking is NOT OVERRIDEN
   isCharging = 0;
   hasCheckedCurr = 0;
+  
+  // Sets SOC initial conditions
+  SOC_init(state_of_charge,coloumb_count);
   //---------------------------------------------------------------------  
   // END SOC Initializations
   //--------------------------------------------------------------------- 
@@ -341,9 +346,150 @@ inline void receive_message( uint8_t uart, uint8_t* message, uint8_t message_siz
   }
 }
 
+/*
+SOC subfunctions
+*/
+
+int soc_init(state_of_charge,coloumb_count,h){
+	
+	int OCV;
+	
+	// Gathers a number of samples for Terminal Voltage and Net Current.
+	// Net current out of the batteries should correspond with [+/-] input current to algorithm.
+	
+	while(sample_counter < sample_size){
+		sampled_i[sample_counter] = input_current;
+		sampled_v[sample_counter] = input_voltage;
+		sample_counter++;
+		delay(10);
+	}
+	
+	sample_counter = 0;
+	
+	//First measurement for SOC
+	
+	algorithm_1(sampled_i,f);
+	compute_vf(f,sampled_v,vf);
+	compute_uf(f,uf);
+	max=max_uf(uf,max_index);
+	OCV=compute_OCV(vf,max,max_index);
+	compute_h(OCV,vf,uf,h);
+	// SOC_index=round(OCV*100);
+	// SOC=SOC_lookup_table[SOC_index];
+	// soc_look_up(OCV,SOCv);
+	SOCv = 95.2;
+	// coulomb_count=current_lookup_table[round(SOC*100)];
+	compute_h(OCV,vf,uf,h)
+	
+}
+
+void soc_data_gather(double sampled_i[],double sampled_v[],double h[]){
+	int sample_counter = 0;
+	int ixh = 0;
+	while(sample_counter < sample_size){
+		sampled_i[sample_counter] = input_current;
+		sampled_v[sample_counter] = input_voltage;
+		sampled_v[sample_counter] = compute_new_voltage(sampled_v[sample_counter],sampled_i[sample_counter],h,sample_counter,ixh);
+		sample_counter++;
+	}
+}
+
+// Calculates f(t) used in the SOC algorithm.
+// Can add an extra input n for size of array since it will always be fixed.
+void algorithm_1(double sampled_i[], double f[]){
+	int n=ELEMENT_COUNT(sampled_i);
+	double f_norm[n];
+	double i_norm[n];
+	for(int i=0;i<n;i++){
+		f_norm[i]=(double) delta_function(i)/sampled_i[0];
+		i_norm[i]=(double) sampled_i[i]/sampled_i[0];
+		
+		for(int i=1;i<n;i++){
+			for(int j=n;j>i;j--){
+				f[j]=f[j]-f_norm[j-i]*i_norm[i];
+				i_norm[j]=i_norm[j]-i_norm[j-i]*i_norm[i];
+			}
+		}
+	}
+}
+
+void compute_uf(double f[], double uf[]){
+	int size=ELEMENT_COUNT(f);
+	double u[size];
+	for(int i=0;i<size;i++){
+		u[i]=step_function(i);
+	}
+	convolve(f,ELEMENT_COUNT(f),u,ELEMENT_COUNT(u),uf);
+}
+
+void compute_vf(double f[], double sampled_v[], double vf[]){
+	convolve(f,ELEMENT_COUNT(f),sampled_v,ELEMENT_COUNT(sampled_v),vf);
+}
+
+double max_uf(double uf[], int max_index){
+	double max=0;
+	for(int i=0;i<ELEMENT_COUNT(uf);i++){
+		if(uf[i]>max){
+			max=uf[i];
+			max_index=i;
+		}
+	}
+	return max;
+}
+
+double compute_OCV(double vf[],double max, int max_index){
+	return (double) vf[max_index]/max;
+}
+
+void compute_h(double OCV, double vf[], double uf[], double h[]){
+	int size=ELEMENT_COUNT(h);
+	for int(i=0;i<size;i++){
+		h[i]=vf[i]-OCV*uf[i];
+	}
+}
+
+int delta_function(int i){
+	return i == 0;
+}
+
+int step_function(int i){
+	return i >= 0;
+}
+
+double compute_new_voltage(double sampled_v, double sampled_current, double h[], unsigned int sample_counter, double ixh){
+	double term=h[sample_counter]*sampled_current;
+	ixh=ixh+term;
+	return sampled_v - ixh;
+}
+
 
 uint8_t antioptimizer = 0;
-void StateofCharge(void){
+double StateofCharge(void){
+	
+	/*
+	This marks the start of the SOC algorithm.
+	For this we assume only that the battery has been off prior to this point.
+	*/
+  
+	// Returns initial conditions for voltage-based and current-based algorithms
+	
+	
+	soc_data_gather(sampled_i,sampled_v,h);
+	algorithm_1(sampled_i,f);
+	compute_vf(f,sampled_v,vf);
+	compute_uf(f,uf);
+	max=max_uf(uf,max_index);
+	OCV=compute_OCV(vf,max,max_index);
+	// soc_look_up(OCV,SOCv);
+	SOCv = OCV;
+	compute_h(OCV,vf,uf,h);
+	
+	
+	
+	return SOC;
+	
+	// Ignoring what is below this...
+	
 	
 	
 	if(batt1_voltage < 0xFF  &&  hasCheckedCurr){
