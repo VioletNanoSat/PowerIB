@@ -2,6 +2,8 @@
 # Automatically-generated file. Do not edit or delete the file
 ################################################################################
 
+mcupwr-main-2.c
+
 mcupwr-main.c
 
 mcupwr-sensing.c

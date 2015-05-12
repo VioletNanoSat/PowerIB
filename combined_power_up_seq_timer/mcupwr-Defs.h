@@ -204,7 +204,7 @@ uint8_t I_upper_val_change;
 
 // Timers and Counters
 volatile uint8_t timer0_counter[2];
-volatile uint8_t timer1_counter[2];		//0th elt for rad/torq 30 min delay; 1th elt for CDH IB heartbeat timeout   //CHANGE DEFS
+volatile uint16_t timer1_counter[2];		//0th elt for rad/torq 30 min delay; 1th elt for CDH IB heartbeat timeout   //WAS uint8_t
 volatile uint8_t cntr;
 
 vcp_ptrbuffer* uart_vcp_buff[2];
