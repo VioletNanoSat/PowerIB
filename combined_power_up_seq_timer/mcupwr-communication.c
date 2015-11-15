@@ -75,6 +75,14 @@ ISR(TIMER1_COMPA_vect)		//Handle Radio & Torquer 30 min delays here; handle 10 m
 		--timer1_counter[0];
 		--timer1_counter[1];
 	//}
+	
+	// somewhere you want ...
+	//   volatile float voltage_sample[t]
+	//   volatile float current_sample[t]
+	// ADC current sample --> current_sample[t]
+	// ADC voltage sample --> voltage_sample[t]
+	// t = t + 1;
+	// if t = max, make sure we call calc_OCV(method)
 }
 
 ISR(USART1_TX_vect)
@@ -95,6 +103,7 @@ ISR ( ADC_vect )
   ADC_low = ADCL;	// Left adjusted; read 2 LSB then 8 MSB
   ADC_high = ADCH;
   adc_flag = 1;
+  coul_count_cnt = (coul_count_cnt + 1) % COUL_SAMPLES;
 }
 
 ISR( USART0_TX_vect )

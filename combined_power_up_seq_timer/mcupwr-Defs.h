@@ -128,6 +128,8 @@
 
 #define NUM_SAMPLES 3
 
+#define COUL_SAMPLES 1000
+
 #define BUFFER_SIZE 255
 
 // SoC Defs used to determine when to enter safe mode or shunt 
@@ -188,6 +190,10 @@ typedef struct SVIT
   uint8_t  T_mux_sel;
   uint8_t  T_samples[NUM_SAMPLES];
   uint8_t  T_sample_index;
+  
+  uint8_t  Coul_samples[NUM_SAMPLES];
+  uint8_t  Coul_sample_index;
+  uint16_t Coul_upper_limit;
 
 } SVIT_t;
 
@@ -198,6 +204,9 @@ uint8_t adc_component;
 uint8_t adc_sensor_type;
 volatile uint8_t ADC_high;
 volatile uint8_t ADC_low;
+
+volatile uint16_t coul_count_cnt;
+volatile uint8_t coul_en;
 
 uint8_t V_upper_val_change;
 uint8_t I_upper_val_change;

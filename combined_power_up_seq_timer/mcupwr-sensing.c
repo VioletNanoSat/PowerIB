@@ -405,7 +405,14 @@ void read_VIT( void )
 		}
 
 	  	component->I_samples[sample_index] = ADC_high;
-    
+		if(coul_count_cnt == 0){
+			uint8_t c_samp_idx = component->Coul_sample_index;
+			if(c_samp_idx == NUM_SAMPLES){
+				coul_en = 1;
+			}
+			component->Coul_samples[component->Coul_sample_index] = ADC_high;
+			component->Coul_sample_index = (c_samp_idx + 1) % NUM_SAMPLES;
+		}
 	    if ( ( ADC_high > component->I_upper_limit ) && ( component->force_on != 1 ) )
 	  	{
 	  		if ( component->switch_num != SW_NULL )

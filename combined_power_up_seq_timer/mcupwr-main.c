@@ -514,6 +514,23 @@ void limit_check( void ) {
 }
 
 
+void coulombCount( void ){
+	SVIT_t *component;
+	uint8_t sampled_i;
+	uint16_t acc_curr;
+	component = &svit[adc_component];
+	if(coul_en == 1){
+		coul_en=0;
+		for (int i=0;i<NUM_SAMPLES;i++){
+			sampled_i = component->I_samples[i];
+			acc_curr = sampled_i * i + acc_curr;
+		}
+		if (acc_curr < component->Coul_upper_limit){
+			acc_curr = component->Coul_upper_limit;
+		}
+	}
+}
+
 
 
 // Calculates percent state of charge
