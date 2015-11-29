@@ -235,6 +235,9 @@ void initialize( void )
   limit_check_overriden = 0; // Initially limit checking is NOT OVERRIDEN
   isCharging = 0;
   hasCheckedCurr = 0;
+  
+  coul_percent = 0;
+  total_percent = percent;
   //---------------------------------------------------------------------  
   // END SOC Initializations
   //--------------------------------------------------------------------- 
@@ -519,19 +522,34 @@ void coulombCount( void ){
 	uint8_t sampled_i;
 	uint16_t acc_curr;
 	component = &svit[adc_component];
+	//MaxCharge = 17275 * 2.2;
 	if(coul_en == 1){
 		coul_en=0;
-		for (int i=0;i<NUM_SAMPLES;i++){
+		acc_curr = percent / 100 * MaxCharge;
+		for (int i=0;i<CURRENT_SAMPLES;i++){
 			sampled_i = component->I_samples[i];
 			acc_curr = sampled_i * i + acc_curr;
 		}
-		if (acc_curr < component->Coul_upper_limit){
-			acc_curr = component->Coul_upper_limit;
+		acc_curr = (float) acc_curr * SAMPLE_TIME_MS / 1000;
+		acc_curr = percent / 100 * MAX_CHARGE + acc_curr;
+		if (acc_curr < 0){
+			acc_curr = 0;
 		}
+		else if(acc_curr > MAX_CHARGE){
+			acc_curr = MAX_CHARGE;
+		}
+		coul_percent = acc_curr / MaxCharge * 100;
 	}
 }
 
-
+void consolidatePercent( void ){
+	if(coul_percent > 0){
+		total_percent = .4*coul_percent + .6*percent;
+	}
+	else{
+		total_percent = percent;
+	}
+}
 
 // Calculates percent state of charge
 void calcSOC( void ) {
@@ -685,7 +703,8 @@ int main( void )
         read_VIT();
 		//calcSOC();
 		StateofCharge();
-
+		coulombCount();
+		consolidatePercent();
 		/*
 		Manual Override on Limit Checking: The power board must be able to receive a 
 		command to disable and/or change the limits in the limit checking code

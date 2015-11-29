@@ -129,6 +129,9 @@
 #define NUM_SAMPLES 3
 
 #define COUL_SAMPLES 1000
+#define CURRENT_SAMPLES 20
+#define SAMPLE_TIME_MS 100
+#define MAX_CHARGE 38005
 
 #define BUFFER_SIZE 255
 
@@ -191,7 +194,7 @@ typedef struct SVIT
   uint8_t  T_samples[NUM_SAMPLES];
   uint8_t  T_sample_index;
   
-  uint8_t  Coul_samples[NUM_SAMPLES];
+  uint8_t  Coul_samples[CURRENT_SAMPLES];
   uint8_t  Coul_sample_index;
   uint16_t Coul_upper_limit;
 
@@ -280,6 +283,9 @@ float charge_max_time;
 float percent;
 uint8_t soc;
 uint8_t isCharging;
+
+float coul_percent;
+float total_percent;
 
 ISR(TIMER0_COMP_vect);
 ISR(TIMER1_COMPA_vect);
