@@ -314,7 +314,7 @@ void read_VIT( void )
 
 			// SoC: If component is a battery, store in different global variable
 			if (component->name == BATTERY_1) {
-				batt1_voltage = ADC_high;
+				batt1_voltage = ADC_high + 11;
 				batt1_voltageLow = ADC_low;
 				high = ADC_high;
 				low = ADC_low;
@@ -414,7 +414,7 @@ void read_VIT( void )
 					coul_en = 1;
 				}
 
-				component->Coul_samples[c_samp_idx] = ADC_high;
+				component->Coul_samples[c_samp_idx] = (float) ADC_high;
 				component->Coul_sample_index = (c_samp_idx + 1) % CURRENT_SAMPLES;
 			}	
 		

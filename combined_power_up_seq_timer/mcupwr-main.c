@@ -385,6 +385,7 @@ void StateofCharge(void){
 		}else if(  ((batt1_voltage > 0x7E)&&isCharging) || ((!isCharging)&&(batt1_voltage > 0x77)) ){
 			percent = 108;
 		}
+		
 	}
 	
 	if(solar1_current < 0xFF && solar1_current > 0x00){
@@ -522,16 +523,18 @@ void limit_check( void ) {
 void coulombCount( void ){
 	SVIT_t *component;
 	uint8_t sampled_i;
-	int16_t acc_curr;
-	component = &svit[adc_component];
+	float acc_curr;
+	component = &svit[BATTERY_1];
 	//MaxCharge = 17275 * 2.2;
 	if(coul_en == 1){
 		coul_en=0;
 		acc_curr = percent / 100 * MAX_CHARGE;
-		for (int i=0;i<CURRENT_SAMPLES;i++){
+		int i;
+		for (i=0;i<CURRENT_SAMPLES;i++){
 			sampled_i = component->I_samples[i];
 			acc_curr = sampled_i * i + acc_curr;
 		}
+		acc_curr /= 251;
 		acc_curr = (float) acc_curr * SAMPLE_TIME_MS / 1000;
 		acc_curr = percent / 100 * MAX_CHARGE + acc_curr;
 		if (acc_curr < 0){
