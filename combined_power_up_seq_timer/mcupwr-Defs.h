@@ -128,8 +128,8 @@
 
 #define NUM_SAMPLES 3
 
-#define COUL_SAMPLES 1000
-#define CURRENT_SAMPLES 20
+#define COUL_SAMPLES 100
+#define CURRENT_SAMPLES 5
 #define SAMPLE_TIME_MS 100
 #define MAX_CHARGE 38005
 
@@ -249,8 +249,8 @@ int32_t g1, g2, g3, g4;
 float w, w2;
 
 // Time and voltage values (between 0 and 255)
-float batt_time;
-uint8_t batt1_voltage;
+//float batt_time;
+uint16_t batt1_voltage;
 uint8_t batt1_voltageLow;
 uint8_t batt2_voltage;
 uint8_t solar1_current;
@@ -277,7 +277,7 @@ uint8_t components[16];
 //DEBUGGING
 uint8_t debug;
 uint8_t debug2;	//Used to display if percent is being rounded to 0 (0xA0), 100 (0xB0) or in between (0xC0)
-float real;
+//float real;
 float discharge_max_time;
 float charge_max_time;
 float percent;

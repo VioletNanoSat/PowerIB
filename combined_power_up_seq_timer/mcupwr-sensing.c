@@ -303,6 +303,7 @@ void read_VIT( void )
   uint8_t mux_sel;
   SVIT_t* component;
   uint8_t sample_index;
+  uint8_t c_samp_idx;
   //analyze completed ADC conversion 
   
   switch ( adc_sensor_type ){
@@ -317,6 +318,7 @@ void read_VIT( void )
 				batt1_voltageLow = ADC_low;
 				high = ADC_high;
 				low = ADC_low;
+				//batt1_voltage = (ADC_high << 8) + ADC_low;
 				//debug = adc_component;
 			}
 			else if (component->name == BATTERY_2) {
@@ -405,14 +407,17 @@ void read_VIT( void )
 		}
 
 	  	component->I_samples[sample_index] = ADC_high;
-		if(coul_count_cnt == 0){
-			uint8_t c_samp_idx = component->Coul_sample_index;
-			if(c_samp_idx == NUM_SAMPLES){
-				coul_en = 1;
-			}
-			component->Coul_samples[component->Coul_sample_index] = ADC_high;
-			component->Coul_sample_index = (c_samp_idx + 1) % NUM_SAMPLES;
-		}
+		
+			if(component->name == BATTERY_1){
+				c_samp_idx = component->Coul_sample_index;
+				if(c_samp_idx == CURRENT_SAMPLES-1){
+					coul_en = 1;
+				}
+
+				component->Coul_samples[c_samp_idx] = ADC_high;
+				component->Coul_sample_index = (c_samp_idx + 1) % CURRENT_SAMPLES;
+			}	
+		
 	    if ( ( ADC_high > component->I_upper_limit ) && ( component->force_on != 1 ) )
 	  	{
 	  		if ( component->switch_num != SW_NULL )

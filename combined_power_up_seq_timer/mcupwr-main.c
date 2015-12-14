@@ -38,6 +38,8 @@ void set_component( uint8_t svit_index, uint8_t name, uint8_t switch_num, uint8_
   svit[svit_index].T_mux_num = T_mux_num;
   svit[svit_index].T_mux_sel = T_mux_sel;
   svit[svit_index].T_sample_index = 0;
+  
+  svit[svit_index].Coul_sample_index = 0;
 }
 
 void initialize_svit( void )
@@ -520,12 +522,12 @@ void limit_check( void ) {
 void coulombCount( void ){
 	SVIT_t *component;
 	uint8_t sampled_i;
-	uint16_t acc_curr;
+	int16_t acc_curr;
 	component = &svit[adc_component];
 	//MaxCharge = 17275 * 2.2;
 	if(coul_en == 1){
 		coul_en=0;
-		acc_curr = percent / 100 * MaxCharge;
+		acc_curr = percent / 100 * MAX_CHARGE;
 		for (int i=0;i<CURRENT_SAMPLES;i++){
 			sampled_i = component->I_samples[i];
 			acc_curr = sampled_i * i + acc_curr;
@@ -538,7 +540,7 @@ void coulombCount( void ){
 		else if(acc_curr > MAX_CHARGE){
 			acc_curr = MAX_CHARGE;
 		}
-		coul_percent = acc_curr / MaxCharge * 100;
+		coul_percent = acc_curr / MAX_CHARGE * 100;
 	}
 }
 
@@ -552,7 +554,7 @@ void consolidatePercent( void ){
 }
 
 // Calculates percent state of charge
-void calcSOC( void ) {
+/*void calcSOC( void ) {
   uint16_t ADC_val = (high << 2) + (low >> 6);
   //10-bit resolution
   //real = (((batt1_voltage + 1)*5)/1024 - 0.0315)*5.5556645; // 16-bit resolution
@@ -626,7 +628,7 @@ void calcSOC( void ) {
   	soc = (char)floor((int)(percent)); 
   }
 }
-
+*/
 /*
 Using the SoC, the power board must autonomously turn on the CDH IB, 
 Radio IBs, Flight Computer, in an arbitrary level at arbitrary charge levels. 
